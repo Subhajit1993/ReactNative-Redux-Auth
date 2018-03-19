@@ -22,10 +22,10 @@ export default {
   bg: {
     flex: 1,
     marginTop: deviceHeight / 1.75,
-    paddingTop: 20,
+      paddingTop: 10,
     paddingLeft: 10,
     paddingRight: 10,
-    paddingBottom: 30,
+      paddingBottom: 20,
     bottom: 0,
   },
   input: {

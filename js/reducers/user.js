@@ -1,6 +1,6 @@
 
 import type { Action } from '../actions/types';
-import { SET_USER } from '../actions/user';
+import {SET_USER, CHECK_USER} from '../actions/user';
 
 export type State = {
     name: string
@@ -8,6 +8,7 @@ export type State = {
 
 const initialState = {
   name: '',
+    user: '',
 };
 
 export default function (state:State = initialState, action:Action): State {
@@ -17,5 +18,11 @@ export default function (state:State = initialState, action:Action): State {
       name: action.payload,
     };
   }
+    if (action.type === CHECK_USER) {
+        return {
+            ...state,
+            user: action.payload,
+        };
+    }
   return state;
 }

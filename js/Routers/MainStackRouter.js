@@ -4,7 +4,6 @@ import Home from "../components/home/";
 import BlankPage from "../components/blankPage";
 import HomeDrawerRouter from "./HomeDrawerRouter";
 import { StackNavigator } from "react-navigation";
-import { Header, Left, Button, Icon, Body, Title, Right } from "native-base";
 HomeDrawerRouter.navigationOptions = ({ navigation }) => ({
   header: null
 });

@@ -6,7 +6,6 @@ import { Container, Content, Text, View } from "native-base";
 import Modal from "react-native-modalbox";
 import MainStackRouter from "./Routers/MainStackRouter";
 import ProgressBar from "./components/loaders/ProgressBar";
-
 import theme from "./themes/base-theme";
 
 const styles = StyleSheet.create({
@@ -33,6 +32,10 @@ class App extends Component {
       downloadProgress: 0
     };
   }
+
+    componentWillMount() {
+        // this.props.checkLogin()
+    }
 
   componentDidMount() {
     CodePush.sync(
@@ -61,6 +64,7 @@ class App extends Component {
   }
 
   render() {
+
     if (this.state.showDownloadingModal) {
       return (
         <Container
@@ -126,9 +130,9 @@ class App extends Component {
         </Container>
       );
     }
-
     return <MainStackRouter />;
   }
 }
 
-export default App;
+export default App
+

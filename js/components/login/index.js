@@ -1,106 +1,76 @@
 import React, { Component } from "react";
-import { Image } from "react-native";
+import {Image, TouchableOpacity, AsyncStorage} from "react-native";
 import { connect } from "react-redux";
+import {bindActionCreators} from 'redux'
 import {
   Container,
   Content,
   Item,
   Input,
   Button,
-  Icon,
+    Form,
   View,
   Text
 } from "native-base";
-import { Field, reduxForm } from "redux-form";
-import { setUser } from "../../actions/user";
+import * as authActions from "../../actions/auth";
+import {getStorage, setStorage} from "../../actions/customActions"
 import styles from "./styles";
+import SplashScreen from "react-native-smart-splash-screen";
 
 const background = require("../../../images/shadow.png");
 
-const validate = values => {
-  const error = {};
-  error.email = "";
-  error.password = "";
-  var ema = values.email;
-  var pw = values.password;
-  if (values.email === undefined) {
-    ema = "";
-  }
-  if (values.password === undefined) {
-    pw = "";
-  }
-  if (ema.length < 8 && ema !== "") {
-    error.email = "too short";
-  }
-  if (!ema.includes("@") && ema !== "") {
-    error.email = "@ not included";
-  }
-  if (pw.length > 12) {
-    error.password = "max 11 characters";
-  }
-  if (pw.length < 5 && pw.length > 0) {
-    error.password = "Weak";
-  }
-  return error;
-};
-
 class Login extends Component {
   static propTypes = {
-    setUser: React.PropTypes.func
+      // setUser: React.PropTypes.func
   };
   constructor(props) {
     super(props);
-    this.state = {
-      name: ""
-    };
-    this.renderInput = this.renderInput.bind(this);
   }
 
-  setUser(name) {
-    this.props.setUser(name);
-  }
-  renderInput({
-    input,
-    label,
-    type,
-    meta: { touched, error, warning },
-    inputProps
-  }) {
-    var hasError = false;
-    if (error !== undefined) {
-      hasError = true;
+    handleClick = () => {
+        this.props.loginWithEmailPassword('ajay.dutta94@gmail.com', '1234567890')
+    };
+
+    componentWillMount() {
+        getStorage('jwt_token').then((value) => {
+            if (value) {
+                this.props.navigation.navigate('Home')
+            }
+        })
     }
-    return (
-      <Item error={hasError}>
-        <Icon active name={input.name === "email" ? "person" : "unlock"} />
-        <Input
-          placeholder={input.name === "email" ? "EMAIL" : "PASSWORD"}
-          {...input}
-        />
-        {hasError
-          ? <Item style={{ borderColor: "transparent" }}>
-              <Icon active style={{ color: "red", marginTop: 5 }} name="bug" />
-              <Text style={{ fontSize: 15, color: "red" }}>{error}</Text>
-            </Item>
-          : <Text />}
-      </Item>
-    );
-  }
+
+    componentDidMount() {
+        SplashScreen.close({
+            animationType: SplashScreen.animationType.scale,
+            duration: 850,
+            delay: 500,
+        });
+    }
+
   render() {
+      if (this.props.jwt_token) {
+          setStorage('jwt_token', this.props.jwt_token).then((value) => {
+              this.props.navigation.navigate('Home')
+          })
+      }
     return (
       <Container>
         <View style={styles.container}>
           <Content>
             <Image source={background} style={styles.shadow}>
               <View style={styles.bg}>
-                <Field name="email" component={this.renderInput} />
-                <Field name="password" component={this.renderInput} />
-                <Button
-                  style={styles.btn}
-                  onPress={() => this.props.navigation.navigate("Home")}
-                >
-                  <Text>Login</Text>
-                </Button>
+                  <Form>
+                      <Item>
+                          <Input placeholder="Username"/>
+                      </Item>
+                      <Item last>
+                          <Input placeholder="Password"/>
+                      </Item>
+                      <Button block onPress={this.handleClick}>
+                          <Text>Sign In</Text>
+                      </Button>
+
+                  </Form>
               </View>
             </Image>
           </Content>
@@ -109,18 +79,15 @@ class Login extends Component {
     );
   }
 }
-const LoginSwag = reduxForm(
-  {
-    form: "test",
-    validate
-  },
-  function bindActions(dispatch) {
+
+function mapStateToProps(state) {
     return {
-      setUser: name => dispatch(setUser(name))
-    };
-  }
-)(Login);
-LoginSwag.navigationOptions = {
-  header: null
-};
-export default LoginSwag;
+        jwt_token: state.auth.jwt_token
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({...authActions}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login)
